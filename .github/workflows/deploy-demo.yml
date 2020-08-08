@@ -21,7 +21,7 @@ jobs:
       name: Configure pip caching
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Download database
@@ -29,7 +29,9 @@ jobs:
         curl -o parlgov.db http://www.parlgov.org/static/data/parlgov-development.db
     - name: Install Python dependencies
       run: |
-        pip install datasette
+        pip install -r requirements.txt
+    - name: Fix foreign keys
+      run: python fix_foreign_keys.py parlgov.db
     - name: Set up Cloud Run
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
