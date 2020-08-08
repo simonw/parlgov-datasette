@@ -1,5 +1,7 @@
 {
     "title": "ParlGov",
     "source": "ParlGov",
-    "source_url": "http://www.parlgov.org/"
+    "source_url": "http://www.parlgov.org/",
+    "about": "simonw/parlgov-datasette",
+    "about_url": "https://github.com/simonw/parlgov-datasette"
 }
