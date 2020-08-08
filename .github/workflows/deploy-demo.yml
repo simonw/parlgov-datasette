@@ -31,7 +31,7 @@ jobs:
       run: |
         pip install -r requirements.txt
     - name: Fix foreign keys
-      run: python fix_foreign_keys.py parlgov.db
+      run: python fix_db.py parlgov.db
     - name: Set up Cloud Run
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
@@ -45,4 +45,5 @@ jobs:
         datasette publish cloudrun parlgov.db \
           -m metadata.json \
           --install=datasette-graphql \
+          --install=datasette-search-all \
           --service parlgov-datasette

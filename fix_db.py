@@ -2,6 +2,43 @@ import sys
 import sqlite_utils
 
 
+def configure_fts(db):
+    db["cabinet"].enable_fts(["name", "description", "comment"], tokenize="porter")
+    db["country"].enable_fts(["name", "name_short"])
+    db["election"].enable_fts(["comment"], tokenize="porter")
+    db["external_commissioner_doering"].enable_fts(
+        ["comment", "portfolio", "highest_position", "person_id_source"],
+        tokenize="porter",
+    )
+    db["external_country_iso"].enable_fts(["country", "capital"])
+    db["external_party_benoit_laver"].enable_fts(["PartyName"])
+    db["external_party_castles_mair"].enable_fts(["name", "name_english"])
+    db["external_party_chess"].enable_fts(["name", "name_english"])
+    db["external_party_cmp"].enable_fts(
+        ["name", "name_english", "comment"], tokenize="porter"
+    )
+    db["external_party_ees"].enable_fts(["name", "name_english"])
+    db["external_party_euprofiler"].enable_fts(["name"])
+    db["external_party_huber_inglehart"].enable_fts(["name", "name_english"])
+    db["external_party_ray"].enable_fts(["ename", "name"])
+    db["info_data_source"].enable_fts(["key", "short", "full"])
+    db["party"].enable_fts(
+        [
+            "name_short",
+            "name_english",
+            "name",
+            "name_nonlatin",
+            "description",
+            "comment",
+        ],
+        tokenize="porter",
+    )
+    db["party_change"].enable_fts(["description", "comment"], tokenize="porter")
+    db["politician_president"].enable_fts(
+        ["person_id_source", "description", "comment"], tokenize="porter"
+    )
+
+
 def fix_foreign_keys(db):
     db.add_foreign_keys(
         [
@@ -40,4 +77,6 @@ if __name__ == "__main__":
     if not sys.argv[-1].endswith(".db"):
         print("Usage: fix_foreign_Keys.py parlgov.db")
         sys.exit(1)
-    fix_foreign_keys(sqlite_utils.Database(sys.argv[-1]))
+    db = sqlite_utils.Database(sys.argv[-1])
+    fix_foreign_keys(db)
+    configure_fts(db)
