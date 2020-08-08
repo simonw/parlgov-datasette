@@ -1,0 +1,46 @@
+name: Deploy parlgov.datasettes.com
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    schedule:
+      # 04:05 on Mondays
+      - cron: '5 4 * * 1'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - uses: actions/cache@v2
+      name: Configure pip caching
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Download database
+      run: |
+        curl -o parlgov.db http://www.parlgov.org/static/data/parlgov-development.db
+    - name: Install Python dependencies
+      run: |
+        pip install datasette
+    - name: Set up Cloud Run
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '275.0.0'
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+    - name: Deploy to Cloud Run
+      run: |-
+        gcloud config set run/region us-central1
+        gcloud config set project datasette-222320
+        datasette publish cloudrun parlgov.db \
+          -m metadata.json \
+          --install=datasette-graphql \
+          --service parlgov-datasette
