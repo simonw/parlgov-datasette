@@ -31,6 +31,7 @@ def fix_foreign_keys(db):
             ("party_name_change", "party_id", "party", "id"),
             ("politician_president", "country_id", "country", "id"),
             ("politician_president", "party_id", "party", "id"),
+            ("info_variable", "table_id", "info_table", "id"),
         ]
     )
 
