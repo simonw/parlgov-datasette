@@ -33,7 +33,7 @@ jobs:
     - name: Fix foreign keys
       run: python fix_db.py parlgov.db
     - name: Set up Cloud Run
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      uses: google-github-actions/setup-gcloud@master
       with:
         version: '275.0.0'
         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
