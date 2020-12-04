@@ -1,3 +1,4 @@
 sqlite-utils
 datasette
 datasette-graphql
+datasette-search-all
