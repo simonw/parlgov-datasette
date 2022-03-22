@@ -5,9 +5,9 @@ on:
   push:
     branches:
     - main
-    schedule:
-      # 04:05 on Mondays
-      - cron: '5 4 * * 1'
+  schedule:
+    # 04:05 on Mondays
+    - cron: '5 4 * * 1'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,12 +26,22 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Download database
       run: |
-        curl -o parlgov.db http://www.parlgov.org/static/data/parlgov-development.db
+        curl --location --fail -o parlgov.db https://parlgov.org/data/parlgov-development.db
     - name: Install Python dependencies
       run: |
         pip install -r requirements.txt
     - name: Fix foreign keys
       run: python fix_db.py parlgov.db
+    - name: Record last ran timestamp
+      run: |
+        date -u > last-ran.txt
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
+        git add last-ran.txt
+        timestamp=$(date -u)
+        git commit -m "Last ran at: ${timestamp}" || exit 0
+        git pull --rebase
+        git push
     - name: Set up Cloud Run
       uses: google-github-actions/setup-gcloud@v0
       with:
